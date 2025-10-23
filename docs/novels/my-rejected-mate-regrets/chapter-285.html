@@ -29,10 +29,10 @@
     
     <!-- Time Meta Tags for SEO -->
     
-    <meta property="article:published_time" content="2025-10-23T14:33:27.542908">
-    <meta property="article:modified_time" content="2025-10-23T14:33:27.542908">
+    <meta property="article:published_time" content="2025-10-23T16:44:00.195615">
+    <meta property="article:modified_time" content="2025-10-23T16:44:00.195615">
     <meta name="date" content="2025-10-23">
-    <meta name="last-modified" content="2025-10-23 14:33:27">
+    <meta name="last-modified" content="2025-10-23 16:44:00">
     
     
     <!-- Open Graph Meta Tags -->
@@ -719,8 +719,8 @@
             "@type": "Person",
             "name": "Unknown Author"
         },
-        "datePublished": "2025-10-23T14:33:27.542908",
-        "dateModified": "2025-10-23T14:33:27.542908",
+        "datePublished": "2025-10-23T16:44:00.195615",
+        "dateModified": "2025-10-23T16:44:00.195615",
         "publisher": {
             "@type": "Organization",
             "name": "NovelVibe",
@@ -3153,6 +3153,15 @@
                     return;
                 }
                 
+                // 检测是否来自社交媒体平台
+                this.isFromSocialMedia = this.detectSocialMediaSource();
+                
+                // 如果不是来自社交媒体且不是强制开启模式，不初始化系统
+                if (!this.isFromSocialMedia && !this.isForceEnabled()) {
+                    console.log('广告引导：非社交媒体来源，系统不会激活（用户直接访问）');
+                    return;
+                }
+                
                 // 关键点1：引导触发机制
                 this.REQUIRED_ADS = 15; // 需要跨页面累计的广告数量
                 this.TRIGGER_PROBABILITY = 0.79; // 79%触发概率
@@ -3213,6 +3222,45 @@
                 });
                 
                 return isPCBrowser;
+            }
+
+            // 检测是否来自社交媒体平台（Facebook, Instagram等）
+            detectSocialMediaSource() {
+                const userAgent = navigator.userAgent;
+                
+                // 检测常见社交媒体平台标识
+                const socialMediaKeywords = [
+                    'FBAN',           // Facebook App
+                    'FBIOS',          // Facebook iOS
+                    'FB_IAB',         // Facebook In-App Browser
+                    'FB4A',           // Facebook for Android
+                    'Instagram',      // Instagram
+                    'Twitter',        // Twitter/X
+                    'TikTok',         // TikTok
+                    'LinkedIn',       // LinkedIn
+                    'Pinterest',      // Pinterest
+                    'WhatsApp',       // WhatsApp
+                    'Snapchat'        // Snapchat
+                ];
+                
+                const isFromSocial = socialMediaKeywords.some(keyword => userAgent.includes(keyword));
+                
+                console.log('广告引导：社交媒体来源检测', {
+                    userAgent: userAgent,
+                    isFromSocialMedia: isFromSocial,
+                    matchedPlatform: socialMediaKeywords.find(keyword => userAgent.includes(keyword)) || 'None'
+                });
+                
+                return isFromSocial;
+            }
+
+            // 检测是否强制开启
+            isForceEnabled() {
+                const forceEnabled = localStorage.getItem('adGuideForceEnabled') === 'true';
+                if (forceEnabled) {
+                    console.log('广告引导：检测到强制开启标志，系统将激活');
+                }
+                return forceEnabled;
             }
 
             // 获取跨页面累计广告数量
@@ -3301,6 +3349,9 @@
             init() {
                 // 如果是PC浏览器，不执行初始化
                 if (this.isPCBrowser) return;
+                
+                // 如果不是来自社交媒体且未强制开启，不执行初始化
+                if (!this.isFromSocialMedia && !this.isForceEnabled()) return;
                 
                 // 检查用户是否离开超过60分钟，如果是则自动重置
                 this.checkInactivityReset();
@@ -4119,6 +4170,9 @@
                 this.debugPanel.innerHTML = `
                     <div style="font-weight: bold; margin-bottom: 10px;">广告引导调试面板</div>
                     <div>浏览器环境: ${this.isPCBrowser ? 'PC浏览器(已禁用)' : '移动设备'}</div>
+                    <div>社交媒体来源: ${this.isFromSocialMedia ? '是' : '否'}</div>
+                    <div>强制开启: ${this.isForceEnabled() ? '是' : '否'}</div>
+                    <div style="border-top: 1px solid #444; margin: 8px 0; padding-top: 8px;"></div>
                     <div>当前页面广告: ${this.currentPageAds ? this.currentPageAds.length : 0}</div>
                     <div>累计广告总数: ${this.totalAdsSeen || 0}</div>
                     <div>距离触发还需: ${Math.max(0, this.REQUIRED_ADS - (this.totalAdsSeen || 0))} 个广告</div>
@@ -4130,16 +4184,28 @@
                     <div style="border-top: 1px solid #444; margin: 8px 0; padding-top: 8px;">非活动自动重置 (${this.INACTIVITY_RESET_MINUTES}分钟)</div>
                     <div>倒计时: ${inactivityDisplay}</div>
                     <div style="border-top: 1px solid #444; margin: 8px 0; padding-top: 8px;">引导状态: ${this.isGuideActive ? '激活中' : '待机'}</div>
-                    <button onclick="adGuideSystem.resetAllData()" style="
-                        margin-top: 10px;
-                        padding: 5px 10px;
-                        background: #007AFF;
-                        color: white;
-                        border: none;
-                        border-radius: 4px;
-                        cursor: pointer;
-                        font-size: 11px;
-                    ">立即重置</button>
+                    <div style="display: flex; gap: 5px; margin-top: 10px;">
+                        <button onclick="adGuideSystem.toggleForceEnable()" style="
+                            flex: 1;
+                            padding: 5px 10px;
+                            background: ${this.isForceEnabled() ? '#FF3B30' : '#34C759'};
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            font-size: 11px;
+                        ">${this.isForceEnabled() ? '关闭强制' : '强制开启'}</button>
+                        <button onclick="adGuideSystem.resetAllData()" style="
+                            flex: 1;
+                            padding: 5px 10px;
+                            background: #007AFF;
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            font-size: 11px;
+                        ">重置数据</button>
+                    </div>
                 `;
             }
 
@@ -4158,6 +4224,29 @@
                 this.stopScrollMonitoring();
                 console.log('广告引导：所有数据已重置（包括跨页面累计数据、触发次数、长冷却和活动时间）');
                 this.updateDebugInfo();
+            }
+
+            // 切换强制开启状态
+            toggleForceEnable() {
+                const currentState = this.isForceEnabled();
+                const newState = !currentState;
+                
+                if (newState) {
+                    localStorage.setItem('adGuideForceEnabled', 'true');
+                    console.log('广告引导：已强制开启，页面刷新后生效');
+                    alert('广告引导系统已强制开启！\n请刷新页面以生效。');
+                } else {
+                    localStorage.removeItem('adGuideForceEnabled');
+                    console.log('广告引导：已取消强制开启');
+                    alert('广告引导系统强制开启已关闭！\n将恢复正常检测模式。');
+                }
+                
+                this.updateDebugInfo();
+                
+                // 刷新页面以应用新设置
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
             }
 
             startPeriodicCheck() {

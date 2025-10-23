@@ -3,6 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- 禁用 Console 输出 -->
+    <script>
+    (function() {
+        'use strict';
+        // 覆盖所有 console 方法，使其不输出任何内容
+        if (typeof console !== 'undefined') {
+            const noop = function() {};
+            const methods = ['log', 'debug', 'info', 'warn', 'error', 'trace', 'dir', 'dirxml', 
+                           'group', 'groupCollapsed', 'groupEnd', 'time', 'timeEnd', 'timeLog',
+                           'assert', 'profile', 'profileEnd', 'count', 'countReset', 'table', 'clear'];
+            methods.forEach(function(method) {
+                if (console[method]) {
+                    console[method] = noop;
+                }
+            });
+        }
+    })();
+    </script>
+    
     <title>{% if chapter.title and novel.title %}{{ chapter.title }} - {{ novel.title }} | NovelVibe{% else %}Reading - NovelVibe{% endif %}</title>
     <meta name="description" content="{% if chapter.summary %}{{ chapter.summary }}{% else %}Read {{ novel.title }} Chapter {{ chapter.number }} on NovelVibe - Free werewolf romance novels{% endif %}">
     <meta name="keywords" content="{% if novel.tags %}{{ novel.tags|join(', ') }}{% else %}werewolf, romance, free novels, online reading{% endif %}">

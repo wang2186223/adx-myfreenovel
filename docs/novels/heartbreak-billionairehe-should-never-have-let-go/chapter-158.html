@@ -4,6 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- AB Version Detection & Redirect System -->
+    <script>
+    (function() {
+        'use strict';
+        
+        // List of tracking parameters that indicate user came from ads
+        const TRACKING_PARAMS = ['fbclid', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'utm_id'];
+        const STORAGE_KEY = 'has_tracking_params';
+        const STORAGE_EXPIRY_KEY = 'tracking_params_expiry';
+        const EXPIRY_HOURS = 720; // 30 days expiration (30 * 24)
+        
+        /**
+         * Check if URL has any tracking parameters
+         */
+        function hasTrackingParams() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                for (let param of TRACKING_PARAMS) {
+                    if (urlParams.has(param)) {
+                        return true;
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to parse URL parameters:', e);
+            }
+            return false;
+        }
+        
+        /**
+         * Check localStorage for tracking parameter history
+         */
+        function hasStoredTrackingParams() {
+            try {
+                const expiryTime = localStorage.getItem(STORAGE_EXPIRY_KEY);
+                if (expiryTime && Date.now() < parseInt(expiryTime)) {
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    return stored === 'true';
+                }
+            } catch (e) {
+                console.error('Failed to read localStorage:', e);
+            }
+            return false;
+        }
+        
+        /**
+         * Save tracking parameter existence to localStorage
+         */
+        function saveTrackingParamStatus() {
+            try {
+                localStorage.setItem(STORAGE_KEY, 'true');
+                const expiryTime = Date.now() + (EXPIRY_HOURS * 60 * 60 * 1000);
+                localStorage.setItem(STORAGE_EXPIRY_KEY, expiryTime.toString());
+            } catch (e) {
+                console.error('Failed to save to localStorage:', e);
+            }
+        }
+        
+        /**
+         * Redirect to clean version (without ads)
+         */
+        function redirectToCleanVersion() {
+            // Get current path and construct clean version URL
+            const currentPath = window.location.pathname;
+            
+            // Replace .html with -clean.html
+            const cleanPath = currentPath.replace(/\.html$/, '-clean.html');
+            
+            // Keep query string and hash if exists
+            const search = window.location.search || '';
+            const hash = window.location.hash || '';
+            
+            // Perform redirect
+            window.location.replace(cleanPath + search + hash);
+        }
+        
+        /**
+         * Initialize version detection
+         */
+        function initVersionDetection() {
+            // Check if current URL has tracking parameters
+            const hasParams = hasTrackingParams();
+            
+            // If URL has tracking parameters, save to localStorage
+            if (hasParams) {
+                saveTrackingParamStatus();
+                // User has tracking params, show ad version (no redirect needed)
+                return;
+            }
+            
+            // Check if localStorage has tracking parameter history
+            const hasStored = hasStoredTrackingParams();
+            
+            // If both URL and localStorage don't have tracking params
+            // Redirect to clean version
+            if (!hasParams && !hasStored) {
+                redirectToCleanVersion();
+            }
+            // Otherwise, user has stored tracking params, show ad version
+        }
+        
+        // Execute detection immediately (before page loads)
+        initVersionDetection();
+    })();
+    </script>
+    
     <!-- Disable Console Output -->
     <script>
     (function() {
@@ -29,10 +134,10 @@
     
     <!-- Time Meta Tags for SEO -->
     
-    <meta property="article:published_time" content="2025-10-23T16:59:55.720084">
-    <meta property="article:modified_time" content="2025-10-23T16:59:55.720084">
-    <meta name="date" content="2025-10-23">
-    <meta name="last-modified" content="2025-10-23 16:59:55">
+    <meta property="article:published_time" content="2025-10-24T11:18:35.004686">
+    <meta property="article:modified_time" content="2025-10-24T11:18:35.004686">
+    <meta name="date" content="2025-10-24">
+    <meta name="last-modified" content="2025-10-24 11:18:35">
     
     
     <!-- Open Graph Meta Tags -->
@@ -719,8 +824,8 @@
             "@type": "Person",
             "name": "Unknown Author"
         },
-        "datePublished": "2025-10-23T16:59:55.720084",
-        "dateModified": "2025-10-23T16:59:55.720084",
+        "datePublished": "2025-10-24T11:18:35.004686",
+        "dateModified": "2025-10-24T11:18:35.004686",
         "publisher": {
             "@type": "Organization",
             "name": "NovelVibe",

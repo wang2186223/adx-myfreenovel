@@ -68,8 +68,15 @@
             // Get current path and construct clean version URL
             const currentPath = window.location.pathname;
             
-            // Replace .html with -clean.html
-            const cleanPath = currentPath.replace(/\.html$/, '-clean.html');
+            // Handle both cases: with and without .html extension
+            let cleanPath;
+            if (currentPath.endsWith('.html')) {
+                // Replace .html with -clean.html
+                cleanPath = currentPath.replace(/\.html$/, '-clean.html');
+            } else {
+                // Add -clean.html suffix
+                cleanPath = currentPath + '-clean.html';
+            }
             
             // Keep query string and hash if exists
             const search = window.location.search || '';

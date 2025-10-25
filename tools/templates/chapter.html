@@ -172,20 +172,26 @@
       gtag('config', 'G-62HR245J7Y');
     </script>
     
-    <!-- Google Publisher Tag (GPT) -->
-    <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" crossorigin="anonymous"></script>
+    <!-- Google Publisher Tag (GPT) with 1s delay -->
     <script>
       window.googletag = window.googletag || {cmd: []};
-      googletag.cmd.push(function() {
-        // Define ad slots for the chapter page
-        googletag.defineSlot('/93656639/myfreenovel.com/banner_1', [300, 250], 'div-gpt-ad-1759824443383-0').addService(googletag.pubads());
-        googletag.defineSlot('/93656639/myfreenovel.com/banner_2', [300, 250], 'div-gpt-ad-1759824489086-0').addService(googletag.pubads());
-        googletag.defineSlot('/93656639/myfreenovel.com/banner_3', [300, 250], 'div-gpt-ad-1759824554464-0').addService(googletag.pubads());
-        googletag.defineSlot('/93656639/myfreenovel.com/banner_4', [300, 250], 'div-gpt-ad-1759824594360-0').addService(googletag.pubads());
-        googletag.defineSlot('/93656639/myfreenovel.com/banner_5', [300, 250], 'div-gpt-ad-1759824626879-0').addService(googletag.pubads());
-        googletag.pubads().enableSingleRequest();
-        googletag.enableServices();
-      });
+      setTimeout(function() {
+        var gptScript = document.createElement('script');
+        gptScript.async = true;
+        gptScript.src = 'https://securepubads.g.doubleclick.net/tag/js/gpt.js';
+        gptScript.crossOrigin = 'anonymous';
+        document.head.appendChild(gptScript);
+        
+        googletag.cmd.push(function() {
+          googletag.defineSlot('/93656639/myfreenovel.com/banner_1', [300, 250], 'div-gpt-ad-1759824443383-0').addService(googletag.pubads());
+          googletag.defineSlot('/93656639/myfreenovel.com/banner_2', [300, 250], 'div-gpt-ad-1759824489086-0').addService(googletag.pubads());
+          googletag.defineSlot('/93656639/myfreenovel.com/banner_3', [300, 250], 'div-gpt-ad-1759824554464-0').addService(googletag.pubads());
+          googletag.defineSlot('/93656639/myfreenovel.com/banner_4', [300, 250], 'div-gpt-ad-1759824594360-0').addService(googletag.pubads());
+          googletag.defineSlot('/93656639/myfreenovel.com/banner_5', [300, 250], 'div-gpt-ad-1759824626879-0').addService(googletag.pubads());
+          googletag.pubads().enableSingleRequest();
+          googletag.enableServices();
+        });
+      }, 1000);
     </script>
     
     <!-- Facebook Pixel Code -->

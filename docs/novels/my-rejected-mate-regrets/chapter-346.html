@@ -141,10 +141,10 @@
     
     <!-- Time Meta Tags for SEO -->
     
-    <meta property="article:published_time" content="2025-10-24T11:32:22.584057">
-    <meta property="article:modified_time" content="2025-10-24T11:32:22.584057">
-    <meta name="date" content="2025-10-24">
-    <meta name="last-modified" content="2025-10-24 11:32:22">
+    <meta property="article:published_time" content="2025-10-25T22:36:21.325879">
+    <meta property="article:modified_time" content="2025-10-25T22:36:21.325879">
+    <meta name="date" content="2025-10-25">
+    <meta name="last-modified" content="2025-10-25 22:36:21">
     
     
     <!-- Open Graph Meta Tags -->
@@ -172,20 +172,26 @@
       gtag('config', 'G-62HR245J7Y');
     </script>
     
-    <!-- Google Publisher Tag (GPT) -->
-    <script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js" crossorigin="anonymous"></script>
+    <!-- Google Publisher Tag (GPT) with 1s delay -->
     <script>
       window.googletag = window.googletag || {cmd: []};
-      googletag.cmd.push(function() {
-        // Define ad slots for the chapter page
-        googletag.defineSlot('/93656639/myfreenovel.com/banner_1', [300, 250], 'div-gpt-ad-1759824443383-0').addService(googletag.pubads());
-        googletag.defineSlot('/93656639/myfreenovel.com/banner_2', [300, 250], 'div-gpt-ad-1759824489086-0').addService(googletag.pubads());
-        googletag.defineSlot('/93656639/myfreenovel.com/banner_3', [300, 250], 'div-gpt-ad-1759824554464-0').addService(googletag.pubads());
-        googletag.defineSlot('/93656639/myfreenovel.com/banner_4', [300, 250], 'div-gpt-ad-1759824594360-0').addService(googletag.pubads());
-        googletag.defineSlot('/93656639/myfreenovel.com/banner_5', [300, 250], 'div-gpt-ad-1759824626879-0').addService(googletag.pubads());
-        googletag.pubads().enableSingleRequest();
-        googletag.enableServices();
-      });
+      setTimeout(function() {
+        var gptScript = document.createElement('script');
+        gptScript.async = true;
+        gptScript.src = 'https://securepubads.g.doubleclick.net/tag/js/gpt.js';
+        gptScript.crossOrigin = 'anonymous';
+        document.head.appendChild(gptScript);
+        
+        googletag.cmd.push(function() {
+          googletag.defineSlot('/93656639/myfreenovel.com/banner_1', [300, 250], 'div-gpt-ad-1759824443383-0').addService(googletag.pubads());
+          googletag.defineSlot('/93656639/myfreenovel.com/banner_2', [300, 250], 'div-gpt-ad-1759824489086-0').addService(googletag.pubads());
+          googletag.defineSlot('/93656639/myfreenovel.com/banner_3', [300, 250], 'div-gpt-ad-1759824554464-0').addService(googletag.pubads());
+          googletag.defineSlot('/93656639/myfreenovel.com/banner_4', [300, 250], 'div-gpt-ad-1759824594360-0').addService(googletag.pubads());
+          googletag.defineSlot('/93656639/myfreenovel.com/banner_5', [300, 250], 'div-gpt-ad-1759824626879-0').addService(googletag.pubads());
+          googletag.pubads().enableSingleRequest();
+          googletag.enableServices();
+        });
+      }, 1000);
     </script>
     
     <!-- Facebook Pixel Code -->
@@ -831,8 +837,8 @@
             "@type": "Person",
             "name": "Unknown Author"
         },
-        "datePublished": "2025-10-24T11:32:22.584057",
-        "dateModified": "2025-10-24T11:32:22.584057",
+        "datePublished": "2025-10-25T22:36:21.325879",
+        "dateModified": "2025-10-25T22:36:21.325879",
         "publisher": {
             "@type": "Organization",
             "name": "NovelVibe",

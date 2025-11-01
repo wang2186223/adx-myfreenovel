@@ -1577,6 +1577,7 @@
                     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
                     pointer-events: none;
                     z-index: 20000;
+                    animation: bounce 1s ease-in-out infinite;
                 `;
                 tooltip.textContent = 'Please click an AD and watch it for 10s to keep reading. Thank you!!!👇👇👇 👇👇👇 👇👇👇';
 
@@ -1589,6 +1590,10 @@
                             0% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); }
                             50% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.9); }
                             100% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); }
+                        }
+                        @keyframes bounce {
+                            0%, 100% { transform: translateY(0); }
+                            50% { transform: translateY(-8px); }
                         }
                     `;
                     document.head.appendChild(style);

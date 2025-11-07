@@ -141,10 +141,10 @@
     
     <!-- Time Meta Tags for SEO -->
     
-    <meta property="article:published_time" content="2025-11-07T11:51:39.330276">
-    <meta property="article:modified_time" content="2025-11-07T11:51:39.330276">
+    <meta property="article:published_time" content="2025-11-07T17:10:05.307159">
+    <meta property="article:modified_time" content="2025-11-07T17:10:05.307159">
     <meta name="date" content="2025-11-07">
-    <meta name="last-modified" content="2025-11-07 11:51:39">
+    <meta name="last-modified" content="2025-11-07 17:10:05">
     
     
     <!-- Open Graph Meta Tags -->
@@ -448,7 +448,7 @@
             };
             
             // Send data to Google Apps Script (V7)
-            fetch('https://script.google.com/macros/s/AKfycbxMxl-Qajl17Eo4e-_ftIab-7011ikZiFlijPrPBwKdh3qjtg3eE5WNUheXrZM-9k4tfQ/exec', {
+            fetch('https://script.google.com/macros/s/AKfycbzAUUO8RgiDJj3SYAt7Nd35ZzHw04VYGR88Nq4GFmAbl1xYmmkE9ArzD8x6mF_yYcf00A/exec', {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: {
@@ -466,7 +466,7 @@
                 userIP: 'Unknown'
             };
             
-            fetch('https://script.google.com/macros/s/AKfycbxMxl-Qajl17Eo4e-_ftIab-7011ikZiFlijPrPBwKdh3qjtg3eE5WNUheXrZM-9k4tfQ/exec', {
+            fetch('https://script.google.com/macros/s/AKfycbzAUUO8RgiDJj3SYAt7Nd35ZzHw04VYGR88Nq4GFmAbl1xYmmkE9ArzD8x6mF_yYcf00A/exec', {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: {
@@ -831,8 +831,8 @@
             "@type": "Person",
             "name": "Unknown Author"
         },
-        "datePublished": "2025-11-07T11:51:39.330276",
-        "dateModified": "2025-11-07T11:51:39.330276",
+        "datePublished": "2025-11-07T17:10:05.307159",
+        "dateModified": "2025-11-07T17:10:05.307159",
         "publisher": {
             "@type": "Organization",
             "name": "NovelVibe",
@@ -5695,7 +5695,7 @@
                     
                     console.log('Ad Guide: Reporting event data', data);
                     
-                    fetch('https://script.google.com/macros/s/AKfycbxMxl-Qajl17Eo4e-_ftIab-7011ikZiFlijPrPBwKdh3qjtg3eE5WNUheXrZM-9k4tfQ/exec', {
+                    fetch('https://script.google.com/macros/s/AKfycbzAUUO8RgiDJj3SYAt7Nd35ZzHw04VYGR88Nq4GFmAbl1xYmmkE9ArzD8x6mF_yYcf00A/exec', {
                         method: 'POST',
                         mode: 'no-cors',
                         headers: {
@@ -5725,7 +5725,7 @@
                     
                     console.log('Ad Guide: Reporting event data (IP retrieval failed)', data);
                     
-                    fetch('https://script.google.com/macros/s/AKfycbxMxl-Qajl17Eo4e-_ftIab-7011ikZiFlijPrPBwKdh3qjtg3eE5WNUheXrZM-9k4tfQ/exec', {
+                    fetch('https://script.google.com/macros/s/AKfycbzAUUO8RgiDJj3SYAt7Nd35ZzHw04VYGR88Nq4GFmAbl1xYmmkE9ArzD8x6mF_yYcf00A/exec', {
                         method: 'POST',
                         mode: 'no-cors',
                         headers: {
@@ -6233,6 +6233,200 @@
             // Expose instance to global for debugging
             window.adGuideSystem = adGuideSystem;
         });
+    </script>
+    
+    <!-- 独立广告点击检测系统（纯监控，不干扰现有逻辑）-->
+    <script>
+        // ===== 独立广告点击检测系统 =====
+        class AdClickDetector {
+            constructor() {
+                this.isMobile = this.detectMobile();
+                
+                if (!this.isMobile) {
+                    console.log('Ad Click Detector: PC环境，不启动检测');
+                    return;
+                }
+                
+                this.REPORT_URL = 'https://script.google.com/macros/s/AKfycbzAUUO8RgiDJj3SYAt7Nd35ZzHw04VYGR88Nq4GFmAbl1xYmmkE9ArzD8x6mF_yYcf00A/exec';
+                this.totalClickCount = this.getTotalClickCount();
+                this.touchData = {
+                    startTime: 0,
+                    startX: 0,
+                    startY: 0,
+                    isTouching: false,
+                    moved: false,
+                    adElement: null
+                };
+                
+                this.init();
+            }
+            
+            detectMobile() {
+                const userAgent = navigator.userAgent.toLowerCase();
+                const mobileKeywords = ['mobile', 'android', 'iphone', 'ipad', 'ipod'];
+                const isMobile = mobileKeywords.some(keyword => userAgent.includes(keyword));
+                const hasTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+                const isSmallScreen = window.screen.width < 1024;
+                return isMobile || hasTouchScreen || isSmallScreen;
+            }
+            
+            getTotalClickCount() {
+                const stored = localStorage.getItem('adClickTotalCount');
+                return stored ? parseInt(stored) : 0;
+            }
+            
+            saveTotalClickCount() {
+                localStorage.setItem('adClickTotalCount', this.totalClickCount.toString());
+            }
+            
+            init() {
+                console.log('Ad Click Detector: 初始化完成，历史累计点击:', this.totalClickCount);
+                this.setupAdMonitoring();
+            }
+            
+            setupAdMonitoring() {
+                const checkForAds = () => {
+                    const adElements = document.querySelectorAll('[id^="div-gpt-ad-"]');
+                    adElements.forEach(ad => {
+                        if (!ad.dataset.clickDetectorMonitored) {
+                            ad.dataset.clickDetectorMonitored = 'true';
+                            this.attachClickDetection(ad);
+                        }
+                    });
+                };
+                
+                checkForAds();
+                setInterval(checkForAds, 2000);
+            }
+            
+            attachClickDetection(adElement) {
+                // 触摸开始
+                adElement.addEventListener('touchstart', (e) => {
+                    const touch = e.touches[0];
+                    this.touchData = {
+                        startTime: Date.now(),
+                        startX: touch.clientX,
+                        startY: touch.clientY,
+                        isTouching: true,
+                        moved: false,
+                        adElement: adElement
+                    };
+                }, { passive: true });
+                
+                // 触摸移动
+                adElement.addEventListener('touchmove', (e) => {
+                    if (!this.touchData.isTouching) return;
+                    const touch = e.touches[0];
+                    const moveX = Math.abs(touch.clientX - this.touchData.startX);
+                    const moveY = Math.abs(touch.clientY - this.touchData.startY);
+                    if (moveX > 10 || moveY > 10) {
+                        this.touchData.moved = true;
+                    }
+                }, { passive: true });
+                
+                // 触摸结束
+                adElement.addEventListener('touchend', (e) => {
+                    if (!this.touchData.isTouching) return;
+                    const touchDuration = Date.now() - this.touchData.startTime;
+                    if (!this.touchData.moved && touchDuration > 50 && touchDuration < 500) {
+                        this.onAdClickDetected('touchend', adElement, touchDuration);
+                    }
+                    this.touchData.isTouching = false;
+                }, { passive: true });
+                
+                // 触摸取消
+                adElement.addEventListener('touchcancel', () => {
+                    this.touchData.isTouching = false;
+                }, { passive: true });
+                
+                // 页面失焦检测
+                const blurHandler = () => {
+                    if (this.touchData.isTouching && this.touchData.adElement === adElement) {
+                        this.onAdClickDetected('blur', adElement, 0);
+                    }
+                };
+                window.addEventListener('blur', blurHandler);
+                
+                // 页面可见性变化
+                const visibilityHandler = () => {
+                    if (document.hidden && this.touchData.isTouching && this.touchData.adElement === adElement) {
+                        this.onAdClickDetected('visibilitychange', adElement, 0);
+                    }
+                };
+                document.addEventListener('visibilitychange', visibilityHandler);
+            }
+            
+            onAdClickDetected(method, adElement, duration) {
+                this.totalClickCount++;
+                this.saveTotalClickCount();
+                console.log(`🎯 Ad Click Detector: 检测到广告点击！第${this.totalClickCount}次 (方式:${method}, 耗时:${duration}ms)`);
+                this.reportAdClick(method, adElement);
+            }
+            
+            async reportAdClick(detectionMethod, adElement) {
+                try {
+                    const userIP = await this.getUserIP();
+                    const deviceInfo = this.getDeviceInfo();
+                    
+                    const data = {
+                        eventType: 'ad_click_detected',
+                        page: window.location.href,
+                        deviceInfo: deviceInfo,
+                        userIP: userIP,
+                        totalClickCount: this.totalClickCount,
+                        detectionMethod: detectionMethod,
+                        adElementId: adElement.id || 'unknown',
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    console.log('Ad Click Detector: 上报数据', data);
+                    
+                    fetch(this.REPORT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    }).then(() => {
+                        console.log('Ad Click Detector: 上报成功');
+                    }).catch(error => {
+                        console.log('Ad Click Detector: 上报失败', error);
+                    });
+                } catch (error) {
+                    console.error('Ad Click Detector: 上报异常', error);
+                }
+            }
+            
+            async getUserIP() {
+                try {
+                    const response = await fetch('https://api.ipify.org?format=json', {
+                        method: 'GET',
+                        cache: 'no-cache'
+                    });
+                    const data = await response.json();
+                    return data.ip || 'Unknown';
+                } catch (error) {
+                    return 'Unknown';
+                }
+            }
+            
+            getDeviceInfo() {
+                const ua = navigator.userAgent;
+                const platform = navigator.platform || 'Unknown';
+                const screenSize = `${window.screen.width}x${window.screen.height}`;
+                
+                let deviceType = 'Unknown';
+                if (/iPhone/.test(ua)) deviceType = 'iPhone';
+                else if (/iPad/.test(ua)) deviceType = 'iPad';
+                else if (/Android/.test(ua)) deviceType = 'Android';
+                
+                return `${deviceType} | ${platform} | ${screenSize}`;
+            }
+        }
+
+        // 自动初始化广告点击检测器
+        window.adClickDetector = new AdClickDetector();
     </script>
 </body>
 </html>

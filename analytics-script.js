@@ -1,6 +1,6 @@
 // Google Apps Script 代码 - 网站访问统计系统(每日独立表格版本)
 // 主控制表格 ID: 1hO9dXSL6mG9UJlhSgVp-5nyKk3YGtU7hg205iortWek
-// 部署URL: https://script.google.com/macros/s/AKfycbxMxl-Qajl17Eo4e-_ftIab-7011ikZiFlijPrPBwKdh3qjtg3eE5WNUheXrZM-9k4tfQ/exec
+// 部署URL: https://script.google.com/macros/s/AKfycbzAUUO8RgiDJj3SYAt7Nd35ZzHw04VYGR88Nq4GFmAbl1xYmmkE9ArzD8x6mF_yYcf00A/exec
 // 
 // 架构说明：
 // - 主表格：用于控制台、统计汇总、表格索引
@@ -27,6 +27,8 @@ function doPost(e) {
     
     if (eventType === 'ad_guide_triggered') {
       handleAdGuideEvent(dailySpreadsheet, data);
+    } else if (eventType === 'ad_click_detected') {
+      handleAdClickEvent(dailySpreadsheet, data);
     } else {
       handlePageVisitEvent(dailySpreadsheet, data);
     }
@@ -171,6 +173,21 @@ function initializeDailySpreadsheet(spreadsheet, dateString) {
   adGuideSheet.setColumnWidth(7, 100);
   adGuideSheet.setColumnWidth(8, 120);
   adGuideSheet.setColumnWidth(9, 180);
+  
+  // 创建"广告点击监测"sheet
+  const adClickSheet = spreadsheet.insertSheet('广告点击监测');
+  adClickSheet.getRange(1, 1, 1, 7).setValues([
+    ['时间', '访问页面', '设备信息', 'IP地址', '历史累计次数', '检测方式', '事件时间戳']
+  ]);
+  const adClickHeader = adClickSheet.getRange(1, 1, 1, 7);
+  adClickHeader.setBackground('#34A853').setFontColor('white').setFontWeight('bold');
+  adClickSheet.setColumnWidth(1, 150);
+  adClickSheet.setColumnWidth(2, 300);
+  adClickSheet.setColumnWidth(3, 200);
+  adClickSheet.setColumnWidth(4, 120);
+  adClickSheet.setColumnWidth(5, 120);
+  adClickSheet.setColumnWidth(6, 150);
+  adClickSheet.setColumnWidth(7, 180);
   
   // 创建"当日统计"概览sheet
   const summarySheet = spreadsheet.insertSheet('📊当日统计', 0);
@@ -322,6 +339,32 @@ function handleAdGuideEvent(dailySpreadsheet, data) {
   ];
   
   adGuideSheet.appendRow(rowData);
+}
+
+/**
+ * 处理广告点击检测事件
+ */
+function handleAdClickEvent(dailySpreadsheet, data) {
+  const adClickSheet = dailySpreadsheet.getSheetByName('广告点击监测');
+  
+  if (!adClickSheet) {
+    console.error('广告点击监测sheet不存在！');
+    return;
+  }
+  
+  const rowData = [
+    getTimeString(),                    // 时间
+    data.page || '',                    // 访问页面
+    data.deviceInfo || '',              // 设备信息
+    data.userIP || 'Unknown',           // IP地址
+    data.totalClickCount || 0,          // 历史累计次数
+    data.detectionMethod || '',         // 检测方式
+    data.timestamp || ''                // 事件时间戳
+  ];
+  
+  adClickSheet.appendRow(rowData);
+  
+  console.log(`广告点击记录: 第${data.totalClickCount}次点击`);
 }
 
 // ==================== 统计更新函数 ====================
